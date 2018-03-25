@@ -5,8 +5,8 @@ using UnityEngine;
 public interface IChessPiece
 {
     GridPosition GetCurrentPosition();
-    ChessPieceColor GetColor();
-    ChessPieceDescription GetDescription();
+    int GetColor();
+    int GetDescription();
     void ValidateMove(GridPosition newPosition);
     void Move(GridPosition newPosition);
     List<GridPosition> GetValidPositions();
