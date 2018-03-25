@@ -5,8 +5,10 @@ public class SpriteController : Singleton<SpriteController>
 {
     protected SpriteController() { }
 
+    #region Vars
     [SerializeField] private List<Sprite> whiteSprites;
     [SerializeField] private List<Sprite> blackSprites;
+    #endregion
 
     public Sprite GetSprite(int spriteColor, int spriteDesc)
     {

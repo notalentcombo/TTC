@@ -1,35 +1,27 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-using UnityEngine.Tilemaps;
+﻿using UnityEngine;
 
 public class InputController : Singleton<InputController>
 {
     protected InputController() { }
 
-    #region Broadcast Mouse Click Events
-    public delegate void BroadcastMouseClick(GridPosition clickPos);
-    public static event BroadcastMouseClick OnBroadcastMouseClick = delegate { };
+    #region Input Handler
+    public delegate void ClickEvent(Vector3 clickPos);
+    public static event ClickEvent OnClickEvent;
 
-    public void MouseClick(GridPosition pos)
+    public void ProcessClick(Vector3 clickPos)
     {
-        OnBroadcastMouseClick(pos);
-        print(string.Format("IC: OnMouseClick triggered {0} event call(s)", OnBroadcastMouseClick.GetInvocationList().Length));
-    }
+        if(OnClickEvent != null)
+            OnClickEvent(clickPos);
 
+        print(string.Format("GC: OnClickEvent triggered {0} event call(s)", OnClickEvent.GetInvocationList().Length));
+    }
     #endregion
 
     #region Unity Methods
     void Update ()
     {
 	    if (Input.GetMouseButtonDown(0))
-        {
-            Vector3 pos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-
-            int x = Mathf.CeilToInt(pos.x) - 1;
-            int y = Mathf.CeilToInt(pos.y) - 1;
-            MouseClick(new GridPosition(x,y));
-        }
+            ProcessClick(Camera.main.ScreenToWorldPoint(Input.mousePosition));
 	}
     #endregion
 }

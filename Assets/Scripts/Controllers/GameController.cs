@@ -9,51 +9,115 @@ public class GameController : Singleton<GameController>
 
     #region Game Reset Handler
     public delegate void NewGame();
-    public static event NewGame OnNewGame = delegate { };
+    public static event NewGame OnNewGame;
 
     public void StartNewGame()
     {
-        OnNewGame();
+        if (OnNewGame != null)
+            OnNewGame();
+
         print(string.Format("GC: OnNewGame triggered {0} event call(s)", OnNewGame.GetInvocationList().Length));
 
         ResetGame();
     }
     #endregion
 
-    [SerializeField] ManagePiece chessPrefab;
+    #region Vars
+    [SerializeField] private ManagePiece chessPrefab;
+    private ManagePiece currentSelectedPiece;
+
     public IChessPiece[,] GameGrid;
 
-    int totalMoves = 0;
-    int currentPlayerTurn = GameConstants.White_Color;
+    private int totalMoves = 0;
+    private int currentPlayerTurn = GameConstants.White_Color;
+    #endregion
 
     public int GetTotalMoves() { return totalMoves; }
     public int GetCurrentPlayerTurn() { return currentPlayerTurn; }
 
     public void EndCurrentPlayerTurn()
     {
-        //if move made
+        //check for game over
         totalMoves++;
         currentPlayerTurn = (currentPlayerTurn == GameConstants.White_Color) ? GameConstants.Black_Color : GameConstants.White_Color;
     }
 
-
     #region UnityMethods
     public void Start()
     {
-        SpawnPieces();
         ResetGame();
+        SpawnPieces();
     }
 
     private void Update()
     {
-
         //testing stuff
         if (Input.GetButtonDown("Jump"))
             StartNewGame();
     }
+
+    private void OnEnable()
+    {
+        InputController.OnClickEvent += HandleClickEvent;
+    }
+
+    private void OnDisable()
+    {
+        InputController.OnClickEvent -= HandleClickEvent;
+    }
     #endregion
 
-    void SpawnPieces()
+    private void HandleClickEvent(Vector3 clickPos)
+    {
+        var hit = Physics2D.Raycast(clickPos, Vector2.zero);
+        ManagePiece hitMP = null;
+
+        if (hit.collider != null)
+            hitMP = hit.collider.GetComponent<ManagePiece>();
+
+        //hit a current player piece so we are either selecting or deselecting
+        if (hitMP != null && hitMP.GetPieceColor() == GetCurrentPlayerTurn())
+        {
+            HandleCurrentPlayerPieceSelection(hitMP);
+            return;
+        }
+
+        //let the player know they need to sort a piece move
+        if (currentSelectedPiece)
+        {
+            currentSelectedPiece.HandleClick(GameUtils.ConvertVector3ToGridPosition(clickPos), hitMP);
+            currentSelectedPiece = null;
+        }
+
+    }
+
+    #region Piece Selection Logic
+    private void HandleCurrentPlayerPieceSelection(ManagePiece hitMP)
+    {
+        if (currentSelectedPiece == null || currentSelectedPiece != hitMP)
+            SelectPiece(hitMP);
+        else if (currentSelectedPiece == hitMP)
+            ClearSelectedPiece();
+    }
+
+    private void SelectPiece(ManagePiece mp)
+    {
+        ClearSelectedPiece();
+        currentSelectedPiece = mp;
+        currentSelectedPiece.HighlightSelectedPiece();
+    }
+
+    private void ClearSelectedPiece()
+    {
+        if (currentSelectedPiece != null)
+        {
+            currentSelectedPiece.RemoveSelectedPieceHighlight();
+            currentSelectedPiece = null;
+        }
+    }
+    #endregion
+
+    private void SpawnPieces()
     {
         for (int c = 0; c < GameConstants.Total_Colors; c++)
         {
@@ -67,10 +131,13 @@ public class GameController : Singleton<GameController>
         }
     }
 
-    void ResetGame()
+    private void ResetGame()
     {
         GameGrid = new IChessPiece[GameConstants.X_Columns - 1, GameConstants.Y_Rows - 1];
         totalMoves = 0;
-        currentPlayerTurn = 1;
+        currentPlayerTurn = GameConstants.White_Color;
+        ClearSelectedPiece();
     }
+
+
 }

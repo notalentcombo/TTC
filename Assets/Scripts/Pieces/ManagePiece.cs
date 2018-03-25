@@ -4,63 +4,105 @@ using UnityEngine;
 
 public class ManagePiece : MonoBehaviour
 {
+    #region Vars
     int myPieceColor = 0;
-    int myPieceDesc = 0;
+    int myPieceRank = 0;
 
-    Sprite pieceSprite;
+    SpriteRenderer spriteRenderer;
+    Material mat;
+    Color originalMaterialColor;
 
-    GridPosition startingGridPosition;
-    GridPosition currentGridPosition;
+    Vector2Int startingGridPosition;
+    Vector2Int currentGridPosition;
+    Vector2Int targetGridPosition;
+
+    IChessPiece currentPieceInterface;
+
     bool onBoard = false;
+    #endregion
 
-    public void Init (int pieceColor, int pieceDesc)
+    public void Init (int pieceColor, int pieceRank)
     {
         myPieceColor = pieceColor;
-        myPieceDesc = pieceDesc;
+        myPieceRank = pieceRank;
 
-        //should only be run once when the pieces are spawned
-        this.GetComponent<SpriteRenderer>().sprite = SpriteController.Instance.GetSprite(myPieceColor, myPieceDesc);
-        this.gameObject.tag = GameConstants.GetPieceColorText(myPieceColor);
-        this.gameObject.name = GameConstants.GetPieceFullText(myPieceColor, myPieceDesc);
-        InitStartPosition();
+        spriteRenderer.sprite = SpriteController.Instance.GetSprite(myPieceColor, myPieceRank);
+        gameObject.tag = GameUtils.GetPieceColorText(myPieceColor);
+        gameObject.name = GameUtils.GetPieceFullText(myPieceColor, myPieceRank);
+        startingGridPosition = GameUtils.GetStartingGridPosition(myPieceColor, myPieceRank);
+        GetInterface();
+        Move(startingGridPosition);
     }
 
-    public void ResetToStartingPosition()
+    public void GetInterface()
     {
-        onBoard = false;
-        currentGridPosition = startingGridPosition;
-        transform.position = new Vector3(currentGridPosition.X, currentGridPosition.Y, transform.position.z);
+        switch (myPieceRank)
+        {
+            case 0:
+                currentPieceInterface = new PawnMovement();
+                break;
+            case 1:
+                currentPieceInterface = new BishopMovement();
+                break;
+            case 2:
+                currentPieceInterface = new KnightMovement();
+                break;
+            case 3:
+                currentPieceInterface = new RookMovement();
+                break;
+            default:
+                break;
+        }
     }
 
-
-    //TODO: in reality only the active piece needs to listen for subsequent mouse clicks
-    public void ListenForMouseClick(GridPosition pos)
-    {
-        if (pos.Equals(currentGridPosition))
-            Debug.Log(this.name + " was clicked.");
-    }
+    public int GetPieceColor() { return myPieceColor; }
 
     #region Unity Methods
+    private void Awake()
+    {
+        spriteRenderer = GetComponent<SpriteRenderer>();
+        mat = GetComponent<SpriteRenderer>().material;
+        originalMaterialColor = mat.color;
+    }
+
     private void OnEnable()
     {
-        GameController.OnNewGame += ResetToStartingPosition;
-        InputController.OnBroadcastMouseClick += ListenForMouseClick;
+        GameController.OnNewGame += HandleNewGameEvent;
     }
 
     private void OnDisable()
     {
-        GameController.OnNewGame -= ResetToStartingPosition;
-        InputController.OnBroadcastMouseClick -= ListenForMouseClick;
+        GameController.OnNewGame -= HandleNewGameEvent;
     }
-
     #endregion  
 
-    private void InitStartPosition()
+    public void HandleNewGameEvent()
     {
-        int startingY = (myPieceColor == 0) ? GameConstants.White_StartingY_Row : GameConstants.Black_StartingY_Row;
+        Move(startingGridPosition);
+    }
 
-        startingGridPosition.X = myPieceDesc;
-        startingGridPosition.Y = startingY;
-        ResetToStartingPosition();
+    public void HandleClick(Vector2Int clickPos, ManagePiece targetPiece)
+    {
+        //move event
+        Move(clickPos);
+    }
+
+    public void Move(Vector2Int newPos)
+    {
+        currentGridPosition = newPos;
+        transform.position = GameUtils.ConvertGridPositionToVector3(currentGridPosition);
+        spriteRenderer.sortingOrder = GameConstants.Total_Pieces - currentGridPosition.y;
+        RemoveSelectedPieceHighlight();
+    }
+
+    public void HighlightSelectedPiece()
+    {
+        mat.color = GameConstants.HighlightPieceColor;
+        //highlight valid places to move
+    }
+
+    public void RemoveSelectedPieceHighlight()
+    {
+        mat.color = originalMaterialColor;
     }
 }

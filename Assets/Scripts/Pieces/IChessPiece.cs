@@ -4,11 +4,6 @@ using UnityEngine;
 
 public interface IChessPiece
 {
-    GridPosition GetCurrentPosition();
-    int GetColor();
-    int GetDescription();
-    void ValidateMove(GridPosition newPosition);
-    void Move(GridPosition newPosition);
-    List<GridPosition> GetValidPositions();
-    void ResetToStartingPosition();
+    bool ValidateMove(Vector2Int newPosition);
+    List<Vector2Int> GetValidPositions();
 }
