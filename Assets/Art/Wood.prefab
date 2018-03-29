@@ -20,7 +20,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4106578230682094}
   - component: {fileID: 2569400267511355756}
-  m_Layer: 31
+  m_Layer: 8
   m_Name: Wood
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -37,7 +37,7 @@ GameObject:
   - component: {fileID: 4369836289136880}
   - component: {fileID: 8195094281567320890}
   - component: {fileID: 3664157344267422852}
-  m_Layer: 31
+  m_Layer: 8
   m_Name: Layer1
   m_TagString: Untagged
   m_Icon: {fileID: 0}

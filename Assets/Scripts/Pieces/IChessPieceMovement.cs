@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public interface IChessPiece
+public interface IChessPieceMovement
 {
     bool ValidateMove(Vector2Int newPosition);
     List<Vector2Int> GetValidPositions();

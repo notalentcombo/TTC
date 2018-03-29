@@ -1,38 +1,41 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 public static class GameUtils
 {
-    public static string GetPieceColorText(int pieceColor)
+    public static string GetPieceColorText(ChessPieceColor pieceColor)
     {
-        if (pieceColor < 0 || pieceColor >= GameConstants.Total_Colors)
-            return null;
+        switch (pieceColor)
+        {
+            case ChessPieceColor.WHITE:
+                return "WHITE";
+            case ChessPieceColor.BLACK:
+                return "BLACK";
+        }
 
-        return (pieceColor == GameConstants.White_Color) ? "WHITE" : "BLACK";
+        return null;
     }
 
-    public static string GetPieceRankText(int pieceRank)
+    public static string GetPieceRankText(ChessPieceRank pieceRank)
     {
         switch (pieceRank)
         {
-            case 0:
+            case ChessPieceRank.PAWN:
                 return "PAWN";
-            case 1:
+            case ChessPieceRank.BISHOP:
                 return "BISHOP";
-            case 2:
+            case ChessPieceRank.KNIGHT:
                 return "KNIGHT";
-            case 3:
+            case ChessPieceRank.ROOK:
                 return "ROOK";
-            default:
-                return null;
         }
+
+        return null;
     }
 
-    public static string GetPieceFullText(int pieceColor, int pieceRank)
+    public static string GetPieceFullText(Piece p)
     {
-        string c = GetPieceColorText(pieceColor);
-        string d = GetPieceRankText(pieceRank);
+        string c = GetPieceColorText(p.GetColor());
+        string d = GetPieceRankText(p.GetRank());
 
         if (c != null && d != null)
             return c + " " + d;
@@ -45,13 +48,15 @@ public static class GameUtils
         return (p.x >= 0 && p.x < GameConstants.X_Columns && p.y >= 0 && p.y < GameConstants.Y_Rows);
     }
 
-    public static Vector2Int GetStartingGridPosition(int pieceColor, int pieceDescription)
+    public static Vector2Int GetStartingGridPosition(Piece p)
     {
-        int startingY = (pieceColor == GameConstants.White_Color) ? GameConstants.White_StartingY_Row : GameConstants.Black_StartingY_Row;
-        return new Vector2Int(pieceDescription, startingY);
+        int x = (int)p.GetRank();
+        int y = (p.GetColor() == ChessPieceColor.WHITE) ? GameConstants.White_StartingY_Row : GameConstants.Black_StartingY_Row;
+
+        return new Vector2Int(x,y);
     }
 
-    public static Vector2Int ConvertVector3ToGridPosition(Vector3 v)
+    public static Vector2Int Vector3ToVector2Int(Vector3 v)
     {
         int x = Mathf.CeilToInt(v.x) - 1;
         int y = Mathf.CeilToInt(v.y) - 1;
@@ -59,9 +64,13 @@ public static class GameUtils
         return new Vector2Int(x, y);
     }
 
-    public static Vector3 ConvertGridPositionToVector3(Vector2Int p)
+    public static Vector3 Vector2IntToVector3(Vector2Int v)
     {
-        return new Vector3(p.x, p.y, 0);
+        return new Vector3(v.x, v.y, 0);
     }
 
+    public static Vector3Int Vector2IntToVector3Int(Vector2Int v)
+    {
+        return new Vector3Int(v.x, v.y, 0);
+    }
 }

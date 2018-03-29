@@ -20,8 +20,10 @@ GameObject:
   m_Component:
   - component: {fileID: 4863855068116434}
   - component: {fileID: 212862092015530888}
-  - component: {fileID: 114704297427333716}
   - component: {fileID: 61959648240490070}
+  - component: {fileID: 114704297427333716}
+  - component: {fileID: 114351918488973994}
+  - component: {fileID: 114710811847318586}
   m_Layer: 9
   m_Name: chess_piece
   m_TagString: Untagged
@@ -67,6 +69,17 @@ BoxCollider2D:
   serializedVersion: 2
   m_Size: {x: 1, y: 1}
   m_EdgeRadius: 0
+--- !u!114 &114351918488973994
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1322706496660806}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ba2dac912e847b24d9a19036e3b3a8bc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &114704297427333716
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -76,6 +89,19 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 713c346bf6a2abf48b19a537467d297a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  gfx: {fileID: 0}
+  move: {fileID: 0}
+--- !u!114 &114710811847318586
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1322706496660806}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3051d6a9fade01242ab649d7577e9a54, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!212 &212862092015530888

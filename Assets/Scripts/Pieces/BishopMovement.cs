@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class BishopMovement : IChessPiece
+public class BishopMovement : IChessPieceMovement
 {
     public List<Vector2Int> GetValidPositions()
     {

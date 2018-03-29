@@ -2,7 +2,9 @@
 
 public class InputController : Singleton<InputController>
 {
+    #region Constructor
     protected InputController() { }
+    #endregion
 
     #region Input Handler
     public delegate void ClickEvent(Vector3 clickPos);

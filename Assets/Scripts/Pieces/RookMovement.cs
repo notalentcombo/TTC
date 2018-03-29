@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class RookMovement : IChessPiece
+public class RookMovement : IChessPieceMovement
 {
     public List<Vector2Int> GetValidPositions()
     {

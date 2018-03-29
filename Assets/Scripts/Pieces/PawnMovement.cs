@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PawnMovement : IChessPiece
+public class PawnMovement : IChessPieceMovement
 {
     public List<Vector2Int> GetValidPositions()
     {
