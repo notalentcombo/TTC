@@ -30,7 +30,6 @@ public class ManagePiece : MonoBehaviour
     bool onBoard = false;
     #endregion
 
-
     public ChessPieceColor GetPieceColor() { return piece.GetColor(); }
 
     public void HandleNewGameEvent()

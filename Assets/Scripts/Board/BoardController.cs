@@ -18,6 +18,18 @@ public class BoardController : Singleton<BoardController>
     #endregion
 
     #region Public Methods
+    public void ClearBoardHighlights()
+    {
+        foreach (var b in _board)
+            b.RemoveHighlight();
+    }
+
+    public void HighlightBoardCell(int i)
+    {
+        if (i < _board.Length)
+            _board[i].Highlight();
+    }
+
     public void HighlightBoardCell(int x, int y)
     {
         HighlightBoardCell(new Vector2Int(x, y));
@@ -60,31 +72,71 @@ public class BoardController : Singleton<BoardController>
     {
         CalculateBoardOffset();
         InitBoard();
-        Foo();
     }
 
-    private void Foo()
+    private void Update()
     {
-        var q = (from BoardCell b in _board
-                 where b.IsHighlighted == true
-                 select b).Count();
+        if (Input.GetButtonDown("Jump"))
+            HighlightRandom();
+    }
 
-        Debug.Log(q.ToString());
+    private void HighlightRandom()
+    {
+        ClearBoardHighlights();
 
-        HighlightBoardCell(0,1);
-        HighlightBoardCell(0,2);
-        HighlightBoardCell(0,3);
-        HighlightBoardCell(0,0);
-        HighlightBoardCell(1,1);
-        HighlightBoardCell(2,2);
-        HighlightBoardCell(3,3);
+        int max = _board.Length - 1;
+        var rnd = new System.Random();
+        HashSet<int> rndNums = new HashSet<int>();
 
-        q = (from BoardCell b 
-             in _board
-             where b.IsHighlighted == true
-             select b).Count();
+        while (rndNums.Count < 4)
+            rndNums.Add(rnd.Next(0, max));
 
-        Debug.Log(q.ToString());
+        foreach (int r in rndNums)
+            HighlightBoardCell(r);
+        
+        Debug.Log(Foo(GameController.Instance.CurrentPlayerTurn));
+    }
+
+    private bool Foo(ChessPieceColor colorCheck)
+    {
+        int checkAllCol = 
+           (from BoardCell b in _board
+            where b.IsHighlighted
+            select b.GridPosition.x
+           ).Distinct().Count();
+
+        int checkAllRow = 
+           (from BoardCell b in _board
+            where b.IsHighlighted
+            select b.GridPosition.y
+           ).Distinct().Count();
+
+        if ((checkAllCol == 4 && checkAllRow == 1) || (checkAllCol == 1 && checkAllRow == 4))
+            return true;
+
+        if (checkAllCol == 4 && checkAllRow == 4)
+        {
+            int checkBLtoTR =
+               (from BoardCell b in _board
+                where b.IsHighlighted
+                   && b.GridPosition.y == b.GridPosition.x
+                select b.GridPosition.y
+               ).Distinct().Count();
+
+            if (checkBLtoTR == 4) return true;
+
+            int checkTLtoBR =
+               (from BoardCell b in _board
+                where b.IsHighlighted
+                   && b.GridPosition.y == -b.GridPosition.x + 3
+                select b.GridPosition.y
+               ).Distinct().Count();
+
+            if (checkTLtoBR == 4) return true;
+        }
+
+        return false;
+
     }
     #endregion
 
